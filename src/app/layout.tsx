@@ -32,8 +32,8 @@ export default function RootLayout({
         <ClerkProvider>
           <header className="flex justify-end gap-2 p-4">
             <Show when="signed-out">
-              <SignInButton />
-              <SignUpButton />
+              <SignInButton mode="modal" />
+              <SignUpButton mode="modal" />
             </Show>
             <Show when="signed-in">
               <UserButton />
