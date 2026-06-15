@@ -2,6 +2,14 @@ import { db } from "@/db";
 import { workouts, workoutExercises, exercises, sets } from "@/db/schema";
 import { and, eq, gte, lt } from "drizzle-orm";
 
+export async function createWorkout(userId: string, name: string | null, startedAt: Date) {
+  const [workout] = await db
+    .insert(workouts)
+    .values({ userId, name, startedAt })
+    .returning();
+  return workout;
+}
+
 export async function getWorkoutsForUserOnDate(userId: string, date: Date) {
   const start = new Date(date);
   start.setHours(0, 0, 0, 0);
@@ -22,8 +30,8 @@ export async function getWorkoutsForUserOnDate(userId: string, date: Date) {
       weight: sets.weight,
     })
     .from(workouts)
-    .innerJoin(workoutExercises, eq(workoutExercises.workoutId, workouts.id))
-    .innerJoin(exercises, eq(exercises.id, workoutExercises.exerciseId))
+    .leftJoin(workoutExercises, eq(workoutExercises.workoutId, workouts.id))
+    .leftJoin(exercises, eq(exercises.id, workoutExercises.exerciseId))
     .leftJoin(sets, eq(sets.workoutExerciseId, workoutExercises.id))
     .where(
       and(
@@ -64,23 +72,25 @@ export async function getWorkoutsForUserOnDate(userId: string, date: Date) {
     }
     const workout = workoutMap.get(row.workoutId)!;
 
-    if (!workout.exercises.has(row.workoutExerciseId)) {
-      workout.exercises.set(row.workoutExerciseId, {
-        id: row.workoutExerciseId,
-        name: row.exerciseName,
-        order: row.exerciseOrder,
-        sets: [],
-      });
-    }
-    const exercise = workout.exercises.get(row.workoutExerciseId)!;
+    if (row.workoutExerciseId) {
+      if (!workout.exercises.has(row.workoutExerciseId)) {
+        workout.exercises.set(row.workoutExerciseId, {
+          id: row.workoutExerciseId,
+          name: row.exerciseName!,
+          order: row.exerciseOrder!,
+          sets: [],
+        });
+      }
+      const exercise = workout.exercises.get(row.workoutExerciseId)!;
 
-    if (row.setId) {
-      exercise.sets.push({
-        id: row.setId,
-        setNumber: row.setNumber,
-        reps: row.reps,
-        weight: row.weight,
-      });
+      if (row.setId) {
+        exercise.sets.push({
+          id: row.setId,
+          setNumber: row.setNumber,
+          reps: row.reps,
+          weight: row.weight,
+        });
+      }
     }
   }
 

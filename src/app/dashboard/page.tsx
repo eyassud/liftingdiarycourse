@@ -45,16 +45,22 @@ export default async function DashboardPage({
           ) : (
             <div className="space-y-6">
               {workoutData.map((workout) => (
-                <div key={workout.id} className="space-y-3">
-                  {workout.name && (
-                    <h3 className="font-medium">{workout.name}</h3>
-                  )}
-                  {workout.exercises.map((exercise) => (
-                    <Card key={exercise.id}>
-                      <CardHeader className="pb-1">
-                        <CardTitle className="text-base">{exercise.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
+                <Card key={workout.id}>
+                  <CardHeader className="pb-1">
+                    <div className="flex items-baseline justify-between">
+                      <CardTitle className="text-base font-bold">{workout.name ?? "Workout"}</CardTitle>
+                      <span className="text-sm text-muted-foreground">
+                        {format(workout.startedAt, "hh:mm aa")}
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {workout.exercises.length === 0 && (
+                      <p className="text-sm text-muted-foreground">In progress</p>
+                    )}
+                    {workout.exercises.map((exercise) => (
+                      <div key={exercise.id}>
+                        <p className="text-sm font-medium">{exercise.name}</p>
                         {exercise.sets.length === 0 ? (
                           <p className="text-sm text-muted-foreground">No sets logged.</p>
                         ) : (
@@ -68,10 +74,10 @@ export default async function DashboardPage({
                             ))}
                           </div>
                         )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
