@@ -8,8 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - /docs/ui.md
 - /docs/data-fetching.md
-- /docs/auth.md
+- /docs/auth.mds
 - /docs/data-mutations.md
+- /docs/routing.md
 
 ## Commands
 
