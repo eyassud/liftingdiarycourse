@@ -15,9 +15,11 @@ export default async function DashboardPage({
   if (!userId) redirect("/");
 
   const { date: dateParam } = await searchParams;
-  const date = dateParam
-    ? (() => { const [y, m, d] = dateParam.split("-").map(Number); return new Date(y, m - 1, d); })()
-    : new Date();
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const dateStr = dateParam ?? todayStr;
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
 
   const workoutData = await getWorkoutsForUserOnDate(userId, date);
 
@@ -29,7 +31,7 @@ export default async function DashboardPage({
         {/* Column 1: date picker */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Select Date</h2>
-          <DatePicker selected={date} />
+          <DatePicker selected={dateStr} />
         </div>
 
         {/* Column 2: workouts */}
