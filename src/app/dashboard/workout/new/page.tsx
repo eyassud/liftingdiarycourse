@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createWorkoutAction } from "./actions";
+import { toLocalDatetimeInput } from "@/lib/formatLocalDatetime";
 
 export default function NewWorkoutPage() {
   const [name, setName] = useState("");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 16));
+  const [date, setDate] = useState(() => toLocalDatetimeInput(new Date()));
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {

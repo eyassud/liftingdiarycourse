@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardContent } from "@/components/ui/card";
 import { updateWorkoutAction } from "./actions";
+import { toLocalDatetimeInput } from "@/lib/formatLocalDatetime";
 
 type Props = {
   workoutId: string;
@@ -17,7 +18,7 @@ type Props = {
 export function EditWorkoutForm({ workoutId, initialName, initialStartedAt }: Props) {
   const [name, setName] = useState(initialName ?? "");
   const [date, setDate] = useState(
-    initialStartedAt.toISOString().slice(0, 16)
+    toLocalDatetimeInput(initialStartedAt)
   );
   const [pending, setPending] = useState(false);
   const router = useRouter();

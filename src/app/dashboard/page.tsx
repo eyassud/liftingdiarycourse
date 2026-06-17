@@ -4,6 +4,7 @@ import { format } from "date-fns";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePicker } from "./DatePicker";
+import { WorkoutTime } from "./WorkoutTime";
 import { getWorkoutsForUserOnDate } from "@/data/workouts";
 
 export default async function DashboardPage({
@@ -52,7 +53,7 @@ export default async function DashboardPage({
                     <div className="flex items-baseline justify-between">
                       <CardTitle className="text-base font-bold">{workout.name ?? "Workout"}</CardTitle>
                       <span className="text-sm text-muted-foreground">
-                        {format(workout.startedAt, "hh:mm aa")}
+                        <WorkoutTime date={workout.startedAt} />
                       </span>
                     </div>
                   </CardHeader>
