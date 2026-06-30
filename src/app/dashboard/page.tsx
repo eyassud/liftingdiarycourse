@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
+import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePicker } from "./DatePicker";
@@ -48,39 +49,41 @@ export default async function DashboardPage({
           ) : (
             <div className="space-y-6">
               {workoutData.map((workout) => (
-                <Card key={workout.id}>
-                  <CardHeader className="pb-1">
-                    <div className="flex items-baseline justify-between">
-                      <CardTitle className="text-base font-bold">{workout.name ?? "Workout"}</CardTitle>
-                      <span className="text-sm text-muted-foreground">
-                        <WorkoutTime date={workout.startedAt} />
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {workout.exercises.length === 0 && (
-                      <p className="text-sm text-muted-foreground">In progress</p>
-                    )}
-                    {workout.exercises.map((exercise) => (
-                      <div key={exercise.id}>
-                        <p className="text-sm font-medium">{exercise.name}</p>
-                        {exercise.sets.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">No sets logged.</p>
-                        ) : (
-                          <div className="space-y-1">
-                            {exercise.sets.map((set) => (
-                              <p key={set.id} className="text-sm text-muted-foreground">
-                                Set {set.setNumber}
-                                {set.reps != null ? `: ${set.reps} reps` : ""}
-                                {set.weight != null ? ` @ ${set.weight}kg` : ""}
-                              </p>
-                            ))}
-                          </div>
-                        )}
+                <Link key={workout.id} href={`/dashboard/workout/${workout.id}`} className="block">
+                  <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+                    <CardHeader className="pb-1">
+                      <div className="flex items-baseline justify-between">
+                        <CardTitle className="text-base font-bold">{workout.name ?? "Workout"}</CardTitle>
+                        <span className="text-sm text-muted-foreground">
+                          <WorkoutTime date={workout.startedAt} />
+                        </span>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {workout.exercises.length === 0 && (
+                        <p className="text-sm text-muted-foreground">In progress</p>
+                      )}
+                      {workout.exercises.map((exercise) => (
+                        <div key={exercise.id}>
+                          <p className="text-sm font-medium">{exercise.name}</p>
+                          {exercise.sets.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No sets logged.</p>
+                          ) : (
+                            <div className="space-y-1">
+                              {exercise.sets.map((set) => (
+                                <p key={set.id} className="text-sm text-muted-foreground">
+                                  Set {set.setNumber}
+                                  {set.reps != null ? `: ${set.reps} reps` : ""}
+                                  {set.weight != null ? ` @ ${set.weight}kg` : ""}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}
