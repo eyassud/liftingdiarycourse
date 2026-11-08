@@ -54,7 +54,7 @@ export function EditWorkoutForm({ workoutId, initialName, initialStartedAt }: Pr
         </div>
         <div className="flex gap-3">
           <Button type="submit" disabled={pending} className="flex-1">
-            {pending ? "Saving..." : "Save Changes"}
+            {pending ? "Saving..." : "Update Workout"}
           </Button>
           <Button
             type="button"

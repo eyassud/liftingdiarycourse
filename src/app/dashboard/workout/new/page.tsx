@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,9 +47,16 @@ export default function NewWorkoutPage() {
                 required
               />
             </div>
-            <Button type="submit" disabled={pending} className="w-full">
-              {pending ? "Creating..." : "Create Workout"}
-            </Button>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={pending} className="flex-1">
+                {pending ? "Creating..." : "Create Workout"}
+              </Button>
+              {!pending && (
+                <Button asChild variant="outline" className="flex-1">
+                  <Link href="/dashboard">Cancel</Link>
+                </Button>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>

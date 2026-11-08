@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePicker } from "./DatePicker";
 import { WorkoutTime } from "./WorkoutTime";
@@ -27,7 +28,12 @@ export default async function DashboardPage({
 
   return (
     <div className="w-3/4 mx-auto p-8 space-y-8">
-      <h1 className="text-2xl font-bold">Workout Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Workout Dashboard</h1>
+        <Button asChild>
+          <Link href="/dashboard/workout/new">Log New Workout</Link>
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
         {/* Column 1: date picker */}
