@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DatePicker } from "./DatePicker";
 import { WorkoutTime } from "./WorkoutTime";
 import { getWorkoutsForUserOnDate } from "@/data/workouts";
@@ -75,15 +76,24 @@ export default async function DashboardPage({
                           {exercise.sets.length === 0 ? (
                             <p className="text-sm text-muted-foreground">No sets logged.</p>
                           ) : (
-                            <div className="space-y-1">
-                              {exercise.sets.map((set) => (
-                                <p key={set.id} className="text-sm text-muted-foreground">
-                                  Set {set.setNumber}
-                                  {set.reps != null ? `: ${set.reps} reps` : ""}
-                                  {set.weight != null ? ` @ ${set.weight}kg` : ""}
-                                </p>
-                              ))}
-                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Set</TableHead>
+                                  <TableHead>Reps</TableHead>
+                                  <TableHead>Weight (lbs)</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {exercise.sets.map((set) => (
+                                  <TableRow key={set.id}>
+                                    <TableCell>{set.setNumber}</TableCell>
+                                    <TableCell>{set.reps ?? "-"}</TableCell>
+                                    <TableCell>{set.weight ?? "-"}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
                           )}
                         </div>
                       ))}

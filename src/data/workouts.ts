@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { workouts, workoutExercises, exercises, sets } from "@/db/schema";
-import { and, eq, gte, lt } from "drizzle-orm";
+import { and, asc, eq, gte, lt, max } from "drizzle-orm";
 
 export async function getWorkoutById(workoutId: string, userId: string) {
   const [workout] = await db
@@ -120,4 +120,75 @@ export async function getWorkoutsForUserOnDate(userId: string, date: Date) {
     ...w,
     exercises: Array.from(w.exercises.values()),
   }));
+}
+
+export async function getWorkoutWithLogById(workoutId: string, userId: string) {
+  const workout = await getWorkoutById(workoutId, userId);
+  if (!workout) return null;
+
+  const rows = await db
+    .select({
+      workoutExerciseId: workoutExercises.id,
+      exerciseOrder: workoutExercises.order,
+      exerciseName: exercises.name,
+      setId: sets.id,
+      setNumber: sets.setNumber,
+      reps: sets.reps,
+      weight: sets.weight,
+    })
+    .from(workoutExercises)
+    .innerJoin(exercises, eq(exercises.id, workoutExercises.exerciseId))
+    .leftJoin(sets, eq(sets.workoutExerciseId, workoutExercises.id))
+    .where(eq(workoutExercises.workoutId, workout.id))
+    .orderBy(asc(workoutExercises.order), asc(sets.setNumber));
+
+  const byId = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      sets: { id: string; setNumber: number; reps: number | null; weight: string | null }[];
+    }
+  >();
+  for (const row of rows) {
+    let ex = byId.get(row.workoutExerciseId);
+    if (!ex) {
+      ex = { id: row.workoutExerciseId, name: row.exerciseName, sets: [] };
+      byId.set(row.workoutExerciseId, ex);
+    }
+    if (row.setId) {
+      ex.sets.push({ id: row.setId, setNumber: row.setNumber!, reps: row.reps, weight: row.weight });
+    }
+  }
+
+  return { workout, exercises: Array.from(byId.values()) };
+}
+
+export async function addExerciseToWorkout(workoutId: string, userId: string, exerciseId: string) {
+  const workout = await getWorkoutById(workoutId, userId);
+  if (!workout) return null;
+
+  const [{ last }] = await db
+    .select({ last: max(workoutExercises.order) })
+    .from(workoutExercises)
+    .where(eq(workoutExercises.workoutId, workout.id));
+
+  const [created] = await db
+    .insert(workoutExercises)
+    .values({ workoutId: workout.id, exerciseId, order: (last ?? 0) + 1 })
+    .returning();
+  return created;
+}
+
+export async function removeWorkoutExercise(workoutExerciseId: string, userId: string) {
+  const [owned] = await db
+    .select({ id: workoutExercises.id })
+    .from(workoutExercises)
+    .innerJoin(workouts, eq(workouts.id, workoutExercises.workoutId))
+    .where(and(eq(workoutExercises.id, workoutExerciseId), eq(workouts.userId, userId)))
+    .limit(1);
+  if (!owned) return false;
+
+  await db.delete(workoutExercises).where(eq(workoutExercises.id, owned.id));
+  return true;
 }
